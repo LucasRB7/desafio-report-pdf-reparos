@@ -58,7 +58,7 @@ app.get("/infor/pdf", (req, res) => {
     const PdfPrinter = require('pdfmake');
     const printer = new PdfPrinter(fonts);
     const fs = require('fs');
-    const dadosRecuperados = dados;
+    const data = dados;
 
     const docDefinition = {
       background: function (page) {              
@@ -85,15 +85,15 @@ app.get("/infor/pdf", (req, res) => {
       content: 
         [
           {
-              text:  dadosRecuperados.aero,
+              text:  data.aero,
               style: "aero"
           },
           {
-              text: dadosRecuperados.blade,
+              text: data.blade,
               style: "blade"
           },
           {
-              text: dadosRecuperados.date,
+              text: data.date,
               style: "dataFinal"
           },
           {
@@ -105,13 +105,17 @@ app.get("/infor/pdf", (req, res) => {
               text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
           },
           {
-            text:  dadosRecuperados.eexecutora,
+            text:  data.eexecutora,
             style: "eexecutora"
+          }, 
+          {
+            text:  `${data.tecnicos[0].nome} e ${data.tecnicos[1].nome}`,
+            style: "tecnicos"
           },       
 
         ],
       images:{
-          logo:`./src/parceiros/${dadosRecuperados.logo}.png`,
+          logo:`./src/parceiros/${data.logo}.png`,
           capa:'./src/capa.png',
           page1:'./src/page1.png'
       },
@@ -138,11 +142,17 @@ app.get("/infor/pdf", (req, res) => {
               margin: [70,40,0,0]
           },
           eexecutora:{
-            fontSize: 18,
+            fontSize: 14,
             bold: true,
             color: "black",
-            margin: [110, 2 , 0 , 0]
-        },
+            margin: [110, 7  , 0 , 0]
+          },
+          tecnicos:{
+            fontSize: 14,
+            bold: true,
+            color: "black",
+            margin: [60, 18 , 0 , 0]
+          },
 
       }
     };
