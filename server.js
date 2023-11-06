@@ -102,7 +102,7 @@ app.get("/infor/pdf", (req, res) => {
               style: 'logo'
           },
           {
-              text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+              text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
           },
           {
             text:  dadosRecuperados.eexecutora,
@@ -141,7 +141,7 @@ app.get("/infor/pdf", (req, res) => {
             fontSize: 18,
             bold: true,
             color: "black",
-            margin: [100, 10 , 0 , 0]
+            margin: [110, 2 , 0 , 0]
         },
 
       }
