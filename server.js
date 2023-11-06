@@ -77,7 +77,15 @@ app.get("/infor/pdf", (req, res) => {
                       width:595,
                   },                    
               ];
-          }     
+          } 
+          if(page == 3){
+            return [                
+                {
+                    image:'page2',
+                    width:595,
+                },                    
+            ];
+        }         
           
       },
 
