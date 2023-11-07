@@ -10,7 +10,7 @@ const port = 3002;
 //#endregion
 //#region endpoints
 let dados = {
-  aero:'AeroDark',
+  aero:'AeroDark-23',
   blade:'BladeBattery',
   date: '25/11/2023',
   logo:'SPIC',
@@ -21,28 +21,8 @@ let dados = {
   ],
   metodoAcesso:'interno',
   fotoDefeito:'def1',
-  nivelReparo:[
-    {nome:'low', id:'1'},
-    {nome:'medium', id:'2'},
-    {nome:'high', id:'3'}
-  ]
+  nivelReparo: 5,
 }
-app.post('/infor/dados' , async(req, res) => {
-  try{
-    const retorno = req.body;
-    dados = {
-      aero:retorno.aero,
-      blade:retorno.blade,
-      date:retorno.date,
-      logo:retorno.logo
-    }
-    res.end("ok")
-    console.log(dados)
-  }catch(error){
-    console.log(error)
-    res.status(500).json(error);
-  }
-})
 
 app.get("/infor/pdf", (req, res) => {
    
@@ -59,6 +39,31 @@ app.get("/infor/pdf", (req, res) => {
     const printer = new PdfPrinter(fonts);
     const fs = require('fs');
     const data = dados;
+
+    const severidade =  () =>{
+      switch (data.nivelReparo) {
+        case 1:
+          return 'low'  
+        case 2:
+          return 'low' 
+        case 3:
+          return 'medium' 
+        case 4:
+          return 'high'
+        case 5:
+          return 'high'    
+        default:
+          break;
+      }
+
+      if(data.nivelReparo == 1 || 2) {
+        return 'low'
+      }else if(data.nivelReparo == 3){
+        return 'medium'
+      }else if(data.nivelReparo == 4 || 5){
+        return 'high'
+      }
+    }
 
     const docDefinition = {
       background: function (page) {              
@@ -113,19 +118,41 @@ app.get("/infor/pdf", (req, res) => {
               text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
           },
           {
-            text:  data.eexecutora,
-            style: "eexecutora"
-          }, 
+            alignment: 'justify',
+            columns: [
+              [
+                {
+                  text:  data.eexecutora,
+                  style: "eexecutora"
+                },
+                {                  
+                  text:  `${data.tecnicos[0].nome} e ${data.tecnicos[1].nome}`,
+                  style: "tecnicos"
+                },
+                {
+                  text:  data.metodoAcesso,
+                  style: "acesso"
+                }
+              ]
+              ,
+              {
+                image: 'defeito',
+                width: 195, 
+                style:'imgReparo'           
+              }
+            ]
+          },
           {
-            text:  `${data.tecnicos[0].nome} e ${data.tecnicos[1].nome}`,
-            style: "tecnicos"
-          },       
+            text: 'X',
+            style: severidade(),
+          },
 
         ],
       images:{
           logo:`./src/parceiros/${data.logo}.png`,
           capa:'./src/capa.png',
-          page1:'./src/page1.png'
+          page1:'./src/page1.png',
+          defeito: './src/fotos/defeito.jpg'
       },
       styles:{
           aero:{
@@ -161,19 +188,37 @@ app.get("/infor/pdf", (req, res) => {
             color: "black",
             margin: [60, 18 , 0 , 0]
           },
-
+          acesso:{
+            fontSize: 14,
+            bold: true,
+            color: 'black',
+            margin: [105, 18, 0 , 0 ]
+          },
+          imgReparo:{
+            margin: [0, -2, 0 , 0],
+          },
+          low:{
+            bold: true,
+            margin: [143, 30, 0, 0]
+          },
+          medium:{
+            bold: true,
+            margin: [211, 30, 0, 0]
+          },
+          high:{
+            bold: true,
+            margin: [293, 30, 0, 0]
+          },
       }
     };
     
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    /*pdfDoc.pipe(fs.createWriteStream('document.pdf')); -server para criar um arquivo pdf- voce pode escolher o caminho = ('caminho/document.pdf') */ 
+    // pdfDoc.pipe(fs.createWriteStream('document.pdf')); -server para criar um arquivo pdf- voce pode escolher o caminho = ('caminho/document.pdf') 
     const chunks = [];
     pdfDoc.on('data', (chunk) =>{
       chunks.push(chunk)
     });
-
     pdfDoc.end();
-
     pdfDoc.on("end", ()=>{
       const result = Buffer.concat(chunks);
       res.end(result)
