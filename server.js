@@ -268,6 +268,24 @@ app.get("/infor/pdf", (req, res) => {
               ]                  
             ]
           },
+          
+          {
+            text:'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+          },
+         {
+          alignment: 'justify',
+          columns:[
+            //primeira
+            {
+              image:'defeito'
+  
+            },
+            {
+              image:'defeito'
+  
+            },
+          ]
+         }
         ],
       images:{
           logo:`./src/parceiros/${data.logo}.png`,
