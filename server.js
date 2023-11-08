@@ -22,11 +22,11 @@ let dados = {
   metodoAcesso:'interno',
   fotoDefeito:'def1',
   nivelReparo: 5,
-  tipoReparo: 'Internal',
+  tipoReparo: 'External',
   gpsLocation: 'unnamed Road, Parnaíba - PI',
-  griding: '855304',
-  laminade: 'Alto',
-  etc: 'value',
+  griding: 5,
+  laminade: 4,
+  etc: 6,
   finishing: 'em andamento',
   totalHours: 450,
   standByCustumer: 'value',
@@ -85,16 +85,19 @@ app.get("/infor/pdf", (req, res) => {
     const grafico1 = new QuickChart();
     grafico1
       .setConfig({
-        type: 'polarArea',
+        type: 'bar',
         data: {
-          labels: [`${data.startDate}`, `${data.finalDate}`],
+          labels: ["Griding", "Laminade","Etc"],
           datasets: [
-            { label: [0] [1] , data: [data.totalHours, data.inneficiencyHours] }
+            { 
+              label: 'Horas' , data: [data.griding, data.laminade ,data.etc],
+              backgroundColor: ['blue'] 
+            }        
           ],
         },
       })
-      .setWidth(350)
-      .setHeight(350)
+      .setWidth(250)
+      .setHeight(250)
       .setBackgroundColor('transparent')
       .setFormat('png')   
       
@@ -261,7 +264,7 @@ app.get("/infor/pdf", (req, res) => {
               ],
               [
                 {
-                  width: 185,
+                  width: 170,
                   image: 'grafico1',
                   style: 'grafico'
                 },
@@ -358,7 +361,7 @@ app.get("/infor/pdf", (req, res) => {
           },
           modoReparoOff:{
             bold: false,
-            color: 'gray',
+            color: '#dfdfdf',
             margin: [0, 29, 0, 0]
           },
           gps:{
@@ -392,7 +395,7 @@ app.get("/infor/pdf", (req, res) => {
             margin: [85, 8, 0, 0]
           },
           grafico:{
-            margin: [-8, -60, 0, 19]
+            margin: [5, -60, 0, 25]
           },
           totalHours:{
             fontSize: 12,
