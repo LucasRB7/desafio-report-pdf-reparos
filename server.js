@@ -21,7 +21,9 @@ let dados = {
   ],
   metodoAcesso:'interno',
   fotoDefeito:'def1',
-  nivelReparo: 5,
+  nivelReparo: 2,
+  tipoReparo: 'External',
+
 }
 
 app.get("/infor/pdf", (req, res) => {
@@ -55,15 +57,18 @@ app.get("/infor/pdf", (req, res) => {
         default:
           break;
       }
-
-      if(data.nivelReparo == 1 || 2) {
-        return 'low'
-      }else if(data.nivelReparo == 3){
-        return 'medium'
-      }else if(data.nivelReparo == 4 || 5){
-        return 'high'
-      }
     }
+
+    let reparoInternal = '';
+    let reparoExternal = '';
+    if(data.tipoReparo == 'Internal'){
+      reparoInternal = 'modoReparoOn'
+      reparoExternal = 'modoReparoOff'
+    }else if(data.tipoReparo == 'External'){
+      reparoInternal = 'modoReparoOff'
+      reparoExternal = 'modoReparoOn'
+    }
+
 
     const docDefinition = {
       background: function (page) {              
@@ -143,9 +148,24 @@ app.get("/infor/pdf", (req, res) => {
             ]
           },
           {
-            text: 'X',
-            style: severidade(),
-          },
+            alignment: 'justify',
+            columns:[
+              {
+                width:345,
+                text: 'X',
+                style: severidade(),
+              },
+              {
+                text: 'Internal',
+                style: reparoInternal
+              },
+              {
+                text: 'External',
+                style: reparoExternal
+              }
+            ]
+          }
+          
 
         ],
       images:{
@@ -209,6 +229,16 @@ app.get("/infor/pdf", (req, res) => {
             bold: true,
             margin: [293, 30, 0, 0]
           },
+          modoReparoOn:{
+            bold: true,
+            color: 'black',
+            margin: [0, 29, 0, 0]
+          },
+          modoReparoOff:{
+            bold: false,
+            color: 'gray',
+            margin: [0, 29, 0, 0]
+          }
       }
     };
     
