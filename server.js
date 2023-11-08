@@ -21,10 +21,22 @@ let dados = {
   ],
   metodoAcesso:'interno',
   fotoDefeito:'def1',
-  nivelReparo: 2,
-  tipoReparo: 'External',
+  nivelReparo: 5,
+  tipoReparo: 'Internal',
+  gpsLocation: 'unnamed Road, Parnaíba - PI',
+  griding: '855304',
+  laminade: 'Alto',
+  etc: 'value',
+  finishing: 'em andamento',
+  totalHours: 450,
+  standByCustumer: 'value',
+  inneficiencyHours: 110,
+  startDate: '08/08/2022',
+  finalDate: '01/11/2023',
 
 }
+
+
 
 app.get("/infor/pdf", (req, res) => {
    
@@ -38,6 +50,7 @@ app.get("/infor/pdf", (req, res) => {
     };
     
     const PdfPrinter = require('pdfmake');
+    const QuickChart = require('quickchart-js');
     const printer = new PdfPrinter(fonts);
     const fs = require('fs');
     const data = dados;
@@ -69,6 +82,33 @@ app.get("/infor/pdf", (req, res) => {
       reparoExternal = 'modoReparoOn'
     }
 
+    const grafico1 = new QuickChart();
+    grafico1
+      .setConfig({
+        type: 'polarArea',
+        data: {
+          labels: [`${data.startDate}`, `${data.finalDate}`],
+          datasets: [
+            { label: [0] [1] , data: [data.totalHours, data.inneficiencyHours] }
+          ],
+        },
+      })
+      .setWidth(350)
+      .setHeight(350)
+      .setBackgroundColor('transparent')
+      .setFormat('png')   
+      
+      // async function base64(){
+      //   const url = await grafico1.getShortUrl();
+      //   console.log(url);
+      //   return url;
+      // }
+
+      // console.log(base64())
+      
+    
+    grafico1.toFile('./src/graficos/grafico1.png')
+    
 
     const docDefinition = {
       background: function (page) {              
@@ -164,15 +204,79 @@ app.get("/infor/pdf", (req, res) => {
                 style: reparoExternal
               }
             ]
-          }
-          
-
+          },
+          {
+            text:'\n\n\n\n'
+          },
+          {
+            width: 350,
+            text: data.gpsLocation,
+            style: 'gps'
+          },
+          {
+            text: data.blade,
+            style: 'bladeAnalytics'
+          },
+          {
+            text: data.aero,
+            style: 'turbineAnalytics'
+          },      
+          {
+            text:'\n\n'
+          },
+          {
+            alignment: 'justify',
+            columns:[
+              [
+                {
+                text: data.griding,
+                style: 'griding'
+                },
+                {
+                text: data.laminade,
+                style: 'griding'
+                },  
+                {
+                  text: data.etc,
+                  style: 'griding'
+                },
+                {
+                  text: data.totalHours,
+                  style: 'totalHours'
+                },
+                {
+                  text: data.inneficiencyHours,
+                  style: 'inneficiencyHours'
+                },
+              ],
+              [
+                {
+                  text: data.startDate,
+                  style: 'startDate'
+                },
+                {
+                  text: data.finalDate,
+                  style: 'startDate'
+                },
+              ],
+              [
+                {
+                  width: 185,
+                  image: 'grafico1',
+                  style: 'grafico'
+                },
+              ]                  
+            ]
+          },
         ],
       images:{
           logo:`./src/parceiros/${data.logo}.png`,
           capa:'./src/capa.png',
           page1:'./src/page1.png',
-          defeito: './src/fotos/defeito.jpg'
+          page2:'./src/page2.png',
+          defeito: './src/fotos/defeito.jpg',
+          grafico1: './src/graficos/grafico1.png'
+
       },
       styles:{
           aero:{
@@ -238,7 +342,53 @@ app.get("/infor/pdf", (req, res) => {
             bold: false,
             color: 'gray',
             margin: [0, 29, 0, 0]
+          },
+          gps:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [85, 6, 150, 0]
+          },
+          bladeAnalytics:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [40, 11, 0, 0]
+          },
+          turbineAnalytics:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [90, 9, 0, 0]
+          },
+          griding:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [65, 7, 0, 3]
+          },
+          startDate:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [85, 8, 0, 0]
+          },
+          grafico:{
+            margin: [-8, -60, 0, 19]
+          },
+          totalHours:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [70, 30, 0, 0]
+          },
+          inneficiencyHours:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [108, 34, 0, 0]
           }
+
       }
     };
     
@@ -258,5 +408,6 @@ app.get("/infor/pdf", (req, res) => {
 //#endregion
 
 app.listen(port, () => {
-  console.log(`Server on - port ${port}`)
+  console.log(`  Server On - Port${port}
+  Ctrl + Clique>>>  http://localhost:${port}/infor/pdf`)
 })
