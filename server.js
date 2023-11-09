@@ -370,20 +370,63 @@ app.get("/infor/pdf", (req, res) => {
           {
             text:'\n\n\n\n\n'
           },
-         {
-          alignment: 'justify',
-          columns:[
-            //primeira
-            {
-              image:'defeito'
+          {
+            alignment: 'justify',
+            columns:[
+              //primeira
+              {
+                image:'defeito',
+                style:'reparoImg',
+                width:120,
+                height: 90,
+              },
+              {
+                image:'defeito',
+                style:'reparoImg2',
+                width:120,
+                height: 90,
+              },
+              {
+                image:'defeito',
+                style:'reparoImg3',
+                width:120,
+                height: 90,
+              },
   
-            },
-            {
-              image:'defeito'
+              {
+                image:'defeito',
+                style:'reparoImg4',
+                width:120,
+                height: 90,
+              }
   
-            },
-          ]
-         }
+            ]
+           },
+           {
+            alignment: 'justify',
+            columns:[
+             //segunda
+              {
+                image:'defeito',
+                style:'reparoImg5',
+                width:120,
+                height: 90,
+              },
+              {
+                image:'defeito',
+                style:'reparoImg6',
+                width:120,
+                height: 90,
+              },
+              {
+                image:'defeito',
+                style:'reparoImg7',
+                width:120,
+                height: 90,
+              }
+  
+            ]
+           }
         ],
       images:{
           logo:`./src/parceiros/${data.logo}.png`,
@@ -518,7 +561,28 @@ app.get("/infor/pdf", (req, res) => {
             fontSize: 12,
             color: 'black',
             margin: [22, 23, 0, 0]
-          }
+          },
+          reparoImg:{
+            margin: [-9, 45, 30, 0],
+          },
+          reparoImg2:{
+            margin: [9, 45, 30, 0],
+          },
+          reparoImg3:{
+            margin: [27, 45, 30, 0],
+          },
+          reparoImg4:{
+            margin: [45, 45, 30, 0],
+          },
+          reparoImg5:{
+            margin: [-9, 68, 20, 0],
+          },
+          reparoImg6:{
+            margin: [9, 68, 30, 0],
+          },
+          reparoImg7:{
+            margin: [27, 68, 30, 0],
+          },
       }
     };
     
