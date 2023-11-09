@@ -13,7 +13,7 @@ let dados = {
   aero:'AeroDark-23',
   blade:'BladeBattery',
   date: '25/11/2023',
-  logo:'SPIC',
+  logo:'DNV',
   eexecutora: 'ArtWind',
   tecnicos: [
     {nome:'Davison Martin' , id:'1'},
@@ -21,19 +21,22 @@ let dados = {
   ],
   metodoAcesso:'interno',
   fotoDefeito:'def1',
-  nivelReparo: 5,
-  tipoReparo: 'External',
+  nivelReparo: 3,
+  tipoReparo: 'Internal',
   gpsLocation: 'unnamed Road, Parnaíba - PI',
-  griding: 5,
+  griding: 6,
+  scarfing: 8,
   laminade: 4,
-  etc: 6,
-  finishing: 'em andamento',
-  totalHours: 450,
+  postcure: 6,
+  hardnessTest: 9,
+  finishing: 3,
+  painting:4,
   standByCustumer: 'value',
-  inneficiencyHours: 110,
+  inneficiencyHours: 1,
   startDate: '08/08/2022',
   finalDate: '01/11/2023',
-
+  conformances: 1,
+  comments: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' //Max 220 caracteres
 }
 
 
@@ -82,15 +85,29 @@ app.get("/infor/pdf", (req, res) => {
       reparoExternal = 'modoReparoOn'
     }
 
+    let yes = '';
+    let not = '';
+    if(data.conformances == 1){
+      yes = 'modoReparoOn'
+      not = 'modoReparoOff'
+    }else if(data.conformances == 2){
+      yes = 'modoReparoOff'
+      not = 'modoReparoOn'
+    }
+
+    const totalHrs = () =>{
+      return (data.griding + data.scarfing + data.laminade + data.postcure + data.hardnessTest + data.finishing + data.painting)
+    }
+
     const grafico1 = new QuickChart();
     grafico1
       .setConfig({
         type: 'bar',
         data: {
-          labels: ["Griding", "Laminade","Etc"],
+          labels: ["Griding", "Scarfing","Laminade"],
           datasets: [
             { 
-              label: 'Horas' , data: [data.griding, data.laminade ,data.etc],
+              label: 'Horas' , data: [data.griding, data.scarfing ,data.laminade],
               backgroundColor: ['blue'] 
             }        
           ],
@@ -111,6 +128,36 @@ app.get("/infor/pdf", (req, res) => {
       
     
     grafico1.toFile('./src/graficos/grafico1.png')
+
+    const grafico2 = new QuickChart();
+    grafico2
+      .setConfig({
+        type: 'bar',
+        data: {
+          labels: ["Postcure", "Hardness Test","Finishing", "Painting"],
+          datasets: [
+            { 
+              label: 'Horas' , data: [data.postcure, data.hardnessTest ,data.finishing, data.painting],
+              backgroundColor: ['blue'] 
+            }        
+          ],
+        },
+      })
+      .setWidth(250)
+      .setHeight(250)
+      .setBackgroundColor('transparent')
+      .setFormat('png')   
+      
+      // async function base64(){
+      //   const url = await grafico1.getShortUrl();
+      //   console.log(url);
+      //   return url;
+      // }
+
+      // console.log(base64())
+      
+    
+    grafico2.toFile('./src/graficos/grafico2.png')
     
 
     const docDefinition = {
@@ -232,25 +279,34 @@ app.get("/infor/pdf", (req, res) => {
             columns:[
               [
                 {
-                text: data.griding,
+                text: `${data.griding} hrs`,
                 style: 'griding'
                 },
                 {
-                text: data.laminade,
+                text: `${data.scarfing} hrs`,
                 style: 'griding'
                 },  
                 {
-                  text: data.etc,
+                  text: `${data.laminade} hrs`,
                   style: 'griding'
                 },
                 {
-                  text: data.totalHours,
-                  style: 'totalHours'
+                  text: `${data.postcure} hrs`,
+                  style: 'griding'
                 },
                 {
-                  text: data.inneficiencyHours,
-                  style: 'inneficiencyHours'
+                  text: `${data.hardnessTest} hrs`,
+                  style: 'griding'
                 },
+                {
+                  text: `${data.finishing} hrs`,
+                  style: 'griding'
+                },
+                 {
+                  text: `${data.painting} hrs`,
+                  style: 'griding'
+                },
+                
               ],
               [
                 {
@@ -259,21 +315,60 @@ app.get("/infor/pdf", (req, res) => {
                 },
                 {
                   text: data.finalDate,
-                  style: 'startDate'
+                  style: 'finalDate'
+                },
+                {
+                  text:  `${totalHrs()} hrs`,
+                  style: 'totalHours'
+                },
+                {
+                  text:  `${data.inneficiencyHours} hrs`,
+                  style: 'inneficiencyHours'
                 },
               ],
               [
                 {
                   width: 170,
+                  height:140,
                   image: 'grafico1',
-                  style: 'grafico'
+                  style: 'graficoUp'
                 },
-              ]                  
+                {
+                  width: 170,
+                  height:140,
+                  image: 'grafico2',
+                  style: 'graficoDown'
+                },
+              ],           
+            ],            
+          },
+          {
+            text:'\n'
+          },
+          {
+            alignment:'justify',
+            columns:[
+              [
+                {
+                  text:  "Yes",
+                  style:  yes
+                },
+                {
+                  text:  "Not",
+                  style:  not
+                },
+              ],
+              [
+                {
+                  text: data.comments,
+                  style: 'comments'
+                }
+              ]      
             ]
           },
           
           {
-            text:'\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
+            text:'\n\n\n\n\n'
           },
          {
           alignment: 'justify',
@@ -296,7 +391,8 @@ app.get("/infor/pdf", (req, res) => {
           page1:'./src/page1.png',
           page2:'./src/page2.png',
           defeito: './src/fotos/defeito.jpg',
-          grafico1: './src/graficos/grafico1.png'
+          grafico1: './src/graficos/grafico1.png',
+          grafico2: './src/graficos/grafico2.png'
 
       },
       styles:{
@@ -386,30 +482,43 @@ app.get("/infor/pdf", (req, res) => {
             fontSize: 12,
             bold: true,
             color: 'black',
-            margin: [65, 7, 0, 3]
+            margin: [85, 7, 0, 3]
           },
           startDate:{
             fontSize: 12,
             bold: true,
             color: 'black',
-            margin: [85, 8, 0, 0]
+            margin: [65, 6, 0, 0]
           },
-          grafico:{
-            margin: [5, -60, 0, 25]
+          finalDate:{
+            fontSize: 12,
+            bold: true,
+            color: 'black',
+            margin: [65, 10, 0, 0]
+          },
+          graficoUp:{
+            margin: [5, -100, 0, 25]
+          },
+          graficoDown:{
+            margin: [5, -25, 0, 25]
           },
           totalHours:{
             fontSize: 12,
             bold: true,
             color: 'black',
-            margin: [70, 30, 0, 0]
+            margin: [70, 58, 0, 0]
           },
           inneficiencyHours:{
             fontSize: 12,
             bold: true,
             color: 'black',
-            margin: [108, 34, 0, 0]
+            margin: [108, 33, 0, 0]
+          },
+          comments:{
+            fontSize: 12,
+            color: 'black',
+            margin: [22, 23, 0, 0]
           }
-
       }
     };
     
