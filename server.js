@@ -2,6 +2,8 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const QuickChart = require("quickchart-js");
+
 app.use(express.json());
 app.use(
   cors({
@@ -26,13 +28,15 @@ let dados = {
   nivelReparo: 3,
   tipoReparo: "Internal",
   gpsLocation: "unnamed Road, Parnaíba - PI",
-  griding: 6,
-  scarfing: 8,
-  laminade: 4,
-  postcure: 6,
-  hardnessTest: 9,
-  finishing: 3,
-  painting: 4,
+  process: [
+    { nome: "Griding", hours: 6, allright: true },
+    { nome: "Scarfing", hours: 8, allright: true },
+    { nome: "Laminade", hours: 4, allright: true },
+    { nome: "Postcure", hours: 6, allright: true },
+    { nome: "HardnessTest", hours: 9, allright: true },
+    { nome: "Finishing", hours: 3, allright: true },
+    { nome: "Painting", hours: 4, allright: true },
+  ],
   standByCustumer: "value",
   inneficiencyHours: 1,
   startDate: "08/08/2022",
@@ -62,6 +66,145 @@ let dados = {
   ],
 };
 
+//#region graficos
+const grafico1 = new QuickChart();
+grafico1
+  .setConfig({
+    type: "bar",
+    data: {
+      labels: [
+        `${dados.process[0].nome}`,
+        `${dados.process[1].nome}`,
+        `${dados.process[2].nome}`,
+      ],
+      datasets: [
+        {
+          label: "Horas",
+          data: [
+            dados.process[0].hours,
+            dados.process[1].hours,
+            dados.process[2].hours,
+          ],
+          backgroundColor: ["blue"],
+        },
+      ],
+    },
+  })
+  .setWidth(250)
+  .setHeight(250)
+  .setBackgroundColor("transparent")
+  .setFormat("png");
+
+grafico1.toFile("./src/graficos/grafico1.png");
+
+const grafico2 = new QuickChart();
+grafico2
+  .setConfig({
+    type: "bar",
+    data: {
+      labels: [
+        `${dados.process[3].nome}`,
+        `${dados.process[4].nome}`,
+        `${dados.process[5].nome}`,
+        `${dados.process[6].nome}`,
+      ],
+      datasets: [
+        {
+          label: "Horas",
+          data: [
+            dados.process[3].hours,
+            dados.process[4].hours,
+            dados.process[5].hours,
+            dados.process[6].hours,
+          ],
+          backgroundColor: ["blue"],
+        },
+      ],
+    },
+  })
+  .setWidth(250)
+  .setHeight(250)
+  .setBackgroundColor("transparent")
+  .setFormat("png");
+
+// const result = async() =>{
+//   return(await grafico2.toDataUrl())
+// }
+
+grafico2.toFile("./src/graficos/grafico2.png");
+
+const grafico3 = new QuickChart();
+grafico3
+  .setConfig({
+    type: "bar",
+    data: {
+      labels: [
+        `${dados.process[0].nome}`,
+        `${dados.process[1].nome}`,
+        `${dados.process[2].nome}`,
+        `${dados.process[3].nome}`,
+        `${dados.process[4].nome}`,
+        `${dados.process[5].nome}`,
+        `${dados.process[6].nome}`,
+      ],
+      datasets: [
+        {
+          label: "Hours",
+          data: [
+            dados.process[0].hours,
+            dados.process[1].hours,
+            dados.process[2].hours,
+            dados.process[3].hours,
+            dados.process[4].hours,
+            dados.process[5].hours,
+            dados.process[6].hours,
+          ],
+          backgroundColor: "#36a2eb",
+          borderColor: "#313E5E",
+          borderWidth: 2,
+        },
+      ],
+    },
+  })
+  .setWidth(530)
+  .setHeight(260)
+  .setFormat("png");
+
+grafico3.toFile("./src/graficos/grafico3.png");
+
+const graficoPosCura = new QuickChart();
+graficoPosCura
+  .setConfig({
+    type: "line",
+    data: {
+      labels: ["Dia 1", "Dia 2", "Dia 3", "Dia 4", "Dia 5"],
+      datasets: [
+        {
+          label: "Tempo de Recuperação (horas)",
+          data: [9, 8, 8, 7, 5],
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  })
+  .setWidth(800)
+  .setHeight(400)
+  // .setBackgroundColor('transparent')
+  .setFormat("jpeg");
+
+graficoPosCura.toFile("./src/graficos/graficoPosCura.png");
+
+//#endregion Graficos
+
 app.get("/infor/pdf", (req, res) => {
   const fonts = {
     Roboto: {
@@ -73,9 +216,7 @@ app.get("/infor/pdf", (req, res) => {
   };
 
   const PdfPrinter = require("pdfmake");
-  const QuickChart = require("quickchart-js");
   const printer = new PdfPrinter(fonts);
-  const fs = require("fs");
   const data = dados;
 
   const severidade = () => {
@@ -116,114 +257,12 @@ app.get("/infor/pdf", (req, res) => {
   }
 
   const totalHrs = () => {
-    return (
-      data.griding +
-      data.scarfing +
-      data.laminade +
-      data.postcure +
-      data.hardnessTest +
-      data.finishing +
-      data.painting
-    );
+    let soma = 0;
+    for (let index = 0; index < data.process.length; index++) {
+      soma += data.process[index].hours;
+    }
+    return soma;
   };
-
-  const grafico1 = new QuickChart();
-  grafico1
-    .setConfig({
-      type: "bar",
-      data: {
-        labels: ["Griding", "Scarfing", "Laminade"],
-        datasets: [
-          {
-            label: "Horas",
-            data: [data.griding, data.scarfing, data.laminade],
-            backgroundColor: ["blue"],
-          },
-        ],
-      },
-    })
-    .setWidth(250)
-    .setHeight(250)
-    .setBackgroundColor("transparent")
-    .setFormat("png");
-
-  // async function base64(){
-  //   const url = await grafico1.getShortUrl();
-  //   console.log(url);
-  //   return url;
-  // }
-
-  // console.log(base64())
-
-  grafico1.toFile("./src/graficos/grafico1.png");
-
-  const grafico2 = new QuickChart();
-  grafico2
-    .setConfig({
-      type: "bar",
-      data: {
-        labels: ["Postcure", "Hardness Test", "Finishing", "Painting"],
-        datasets: [
-          {
-            label: "Horas",
-            data: [
-              data.postcure,
-              data.hardnessTest,
-              data.finishing,
-              data.painting,
-            ],
-            backgroundColor: ["blue"],
-          },
-        ],
-      },
-    })
-    .setWidth(250)
-    .setHeight(250)
-    .setBackgroundColor("transparent")
-    .setFormat("png");
-
-  // async function base64(){
-  //   const url = await grafico1.getShortUrl();
-  //   console.log(url);
-  //   return url;
-  // }
-
-  // console.log(base64())
-
-  grafico2.toFile("./src/graficos/grafico2.png");
-
-  // Gráfico Pòs Cura
-
-  const graficoPosCura = new QuickChart();
-  graficoPosCura
-    .setConfig({
-      type: "line",
-      data: {
-        labels: ["Dia 1", "Dia 2", "Dia 3", "Dia 4", "Dia 5"],
-        datasets: [
-          {
-            label: "Tempo de Recuperação (horas)",
-            data: [9, 8, 8, 7, 5],
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
-            borderWidth: 1,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
-    })
-    .setWidth(800)
-    .setHeight(400)
-    // .setBackgroundColor('transparent')
-    .setFormat("jpeg");
-
-  graficoPosCura.toFile("./src/graficos/graficoPosCura.png");
 
   const docDefinition = {
     background: function (page) {
@@ -356,31 +395,31 @@ app.get("/infor/pdf", (req, res) => {
         columns: [
           [
             {
-              text: `${data.griding} hrs`,
+              text: `${data.process[0].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.scarfing} hrs`,
+              text: `${data.process[1].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.laminade} hrs`,
+              text: `${data.process[2].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.postcure} hrs`,
+              text: `${data.process[3].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.hardnessTest} hrs`,
+              text: `${data.process[4].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.finishing} hrs`,
+              text: `${data.process[5].hours} hrs`,
               style: "griding",
             },
             {
-              text: `${data.painting} hrs`,
+              text: `${data.process[6].hours} hrs`,
               style: "griding",
             },
           ],
@@ -453,26 +492,26 @@ app.get("/infor/pdf", (req, res) => {
           {
             image: "defeito",
             style: "reparoImg",
-            width: 120,
+            width: 126,
             height: 90,
           },
           {
             image: "defeito",
             style: "reparoImg2",
-            width: 120,
+            width: 126,
             height: 90,
           },
           {
             image: "defeito",
             style: "reparoImg3",
-            width: 120,
+            width: 126,
             height: 90,
           },
 
           {
             image: "defeito",
             style: "reparoImg4",
-            width: 120,
+            width: 126,
             height: 90,
           },
         ],
@@ -484,28 +523,32 @@ app.get("/infor/pdf", (req, res) => {
           {
             image: "defeito",
             style: "reparoImg5",
-            width: 120,
+            width: 126,
             height: 90,
           },
           {
             image: "defeito",
             style: "reparoImg6",
-            width: 120,
+            width: 126,
             height: 90,
           },
           {
             image: "defeito",
             style: "reparoImg7",
-            width: 120,
+            width: 126,
             height: 90,
           },
         ],
       },
       {
-        text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        text:'\n\n\n\n\n\n\n\n'
       },
       {
-        text: "\n\n\n\n\n\n\n\n\n",
+        image:'grafico3',
+        style:'grafico3'
+      },
+      {
+        text:'\n\n\n\n\n\n\n\n'
       },
       {
         text: dados.DemagesWidth,
@@ -572,6 +615,7 @@ app.get("/infor/pdf", (req, res) => {
       defeito: "./src/fotos/defeito.jpg",
       grafico1: "./src/graficos/grafico1.png",
       grafico2: "./src/graficos/grafico2.png",
+      grafico3: './src/graficos/grafico3.png',
       graficoPosCura: "./src/graficos/graficoPosCura.png",
     },
     styles: {
@@ -676,7 +720,7 @@ app.get("/infor/pdf", (req, res) => {
         fontSize: 12,
         bold: true,
         color: "black",
-        margin: [85, 7, 0, 3],
+        margin: [90, 7, 0, 3],
       },
       startDate: {
         fontSize: 12,
@@ -713,26 +757,29 @@ app.get("/infor/pdf", (req, res) => {
         color: "black",
         margin: [22, 23, 0, 0],
       },
-      reparoImg: {
-        margin: [-9, 45, 30, 0],
+      reparoImg:{
+        margin: [-15, 43, 30, 0],
       },
-      reparoImg2: {
-        margin: [9, 45, 30, 0],
+      reparoImg2:{
+        margin: [0.5, 43, 30, 0],
       },
-      reparoImg3: {
-        margin: [27, 45, 30, 0],
+      reparoImg3:{
+        margin: [17, 43, 30, 0],
       },
-      reparoImg4: {
-        margin: [45, 45, 30, 0],
+      reparoImg4:{
+        margin: [32, 43, 30, 0],
       },
-      reparoImg5: {
-        margin: [-9, 68, 20, 0],
+      reparoImg5:{
+        margin: [-15, 75, 20, 0],
       },
-      reparoImg6: {
-        margin: [9, 68, 30, 0],
+      reparoImg6:{
+        margin: [0.5, 75, 30, 0],
       },
-      reparoImg7: {
-        margin: [27, 68, 30, 0],
+      reparoImg7:{
+        margin: [17, 75, 30, 0],
+      },
+      grafico3:{
+        margin: [-5,0,0,0]
       },
       graficoPosCura: {
         margin: [25, -25, 0, 0],
