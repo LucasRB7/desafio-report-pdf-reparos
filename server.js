@@ -12,7 +12,7 @@ app.use(
 );
 const port = 3002;
 //#endregion
-//#region endpoints
+
 let dados = {
   aero: "AeroDark-23",
   blade: "BladeBattery",
@@ -204,6 +204,11 @@ graficoPosCura
 graficoPosCura.toFile("./src/graficos/graficoPosCura.png");
 
 //#endregion Graficos
+
+//#region endpoints
+app.get("/infor/pdf/certificado1" , (req, res)=>{
+  res.sendFile(__dirname + '/src/certificado1.pdf')
+})
 
 app.get("/infor/pdf", (req, res) => {
   const fonts = {
@@ -574,36 +579,49 @@ app.get("/infor/pdf", (req, res) => {
         style: "repair",
       },
       {
-        text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+        text: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
       },
 
       {
         image: "graficoPosCura",
-        width: 400,
-        height: 200,
+        width: 500,
+        height: 250,
         style: "graficoPosCura",
       },
       {
-        text: "\n\n\n\n\n\n\n\n\n\n",
+        text: "\n\n\n\n\n\n\n\n",
       },
       {
-        text: `${dados.materialData[0].resina}  \n\n  ${dados.materialData[0].lote}  \n\n ${dados.materialData[0].expiration}`,
+        text: `${dados.materialData[0].resina}  \n\n  ${dados.materialData[0].lote}  \n\n ${dados.materialData[0].expiration} \n`,
         style: "list",
       },
       {
-        text: "\n\n\n\n\n\n\n\n",
+        image: 'btnCertificado',
+        width: 100,
+        link: '/infor/pdf/certificado1',
+        style:'btn'
+      },
+      {
+        text: "\n\n\n\n\n\n\n",
       },
       {
         text: `${dados.materialData[1].resina}  \n\n  ${dados.materialData[1].lote}  \n\n ${dados.materialData[1].expiration}`,
         style: "list",
       },
       {
-        text: "\n\n\n\n\n\n",
+        image: 'btnCertificado',
+        width: 100,
+        link: '/infor/pdf/certificado1',
+        style: 'btn'
+      },
+      {
+        text: "\n\n\n\n\n",
       },
       {
         text: dados.materialData.map((e) => e.description + "\n"),
         style: "list",
       },
+      
     ],
     images: {
       logo: `./src/parceiros/${data.logo}.png`,
@@ -617,23 +635,9 @@ app.get("/infor/pdf", (req, res) => {
       grafico2: "./src/graficos/grafico2.png",
       grafico3: './src/graficos/grafico3.png',
       graficoPosCura: "./src/graficos/graficoPosCura.png",
+      btnCertificado: "./src/btn-certificado.png",
     },
     styles: {
-      margPage: {
-        margin: [35, 100, 0, 0],
-      },
-      marginGrafico: {
-        margin: [0, 240, 0, 0],
-      },
-      repair: {
-        margin: [30, 0, 0, 18],
-      },
-      text: {
-        margin: [30, -2, 0, 18],
-      },
-      list: {
-        margin: [60, -2, 0, 18],
-      },
       aero: {
         fontSize: 18,
         bold: true,
@@ -782,7 +786,25 @@ app.get("/infor/pdf", (req, res) => {
         margin: [-5,0,0,0]
       },
       graficoPosCura: {
-        margin: [25, -25, 0, 0],
+        margin: [10, -25, 0, 0],
+      },
+      btn:{
+        margin: [60, -5, 0, 2],
+      },
+      margPage: {
+        margin: [35, 100, 0, 0],
+      },
+      marginGrafico: {
+        margin: [0, 240, 0, 0],
+      },
+      repair: {
+        margin: [30, 4, 0, 10],
+      },
+      text: {
+        margin: [110, -2, 0, 18],
+      },
+      list: {
+        margin: [60, -2, 0, 18],
       },
     },
   };
