@@ -29,19 +29,18 @@ let dados = {
   tipoReparo: "Internal",
   gpsLocation: "unnamed Road, Parnaíba - PI",
   process: [
-    { nome: "Griding", hours: 6, allright: true },
-    { nome: "Scarfing", hours: 8, allright: true },
-    { nome: "Laminade", hours: 4, allright: true },
-    { nome: "Postcure", hours: 6, allright: true },
-    { nome: "HardnessTest", hours: 9, allright: true },
-    { nome: "Finishing", hours: 3, allright: true },
-    { nome: "Painting", hours: 4, allright: true },
+    { nome: "Griding", hours: 6, allRight: true },
+    { nome: "Scarfing", hours: 8, allRight: false },
+    { nome: "Laminade", hours: 4, allRight: true },
+    { nome: "Postcure", hours: 6, allRight: true },
+    { nome: "HardnessTest", hours: 9, allRight: true },
+    { nome: "Finishing", hours: 3, allRight: false },
+    { nome: "Painting", hours: 4, allRight: true },
   ],
   standByCustumer: "value",
   inneficiencyHours: 1,
   startDate: "08/08/2022",
   finalDate: "01/11/2023",
-  conformances: 1,
   comments:
     "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.", //Max 220 caracteres
   DemagesWidth: "300 mm",
@@ -207,7 +206,7 @@ graficoPosCura.toFile("./src/graficos/graficoPosCura.png");
 
 //#region endpoints
 app.get("/infor/pdf/certificado1" , (req, res)=>{
-  res.sendFile(__dirname + '/src/certificado1.pdf')
+  res.download(__dirname + '/src/certificado1.pdf')
 })
 
 app.get("/infor/pdf", (req, res) => {
@@ -253,10 +252,14 @@ app.get("/infor/pdf", (req, res) => {
 
   let yes = "";
   let not = "";
-  if (data.conformances == 1) {
+
+  const c = data.process.map((E)=>{
+    return E.allRight    
+  })
+  if(c.includes(false) == true){
     yes = "modoReparoOn";
     not = "modoReparoOff";
-  } else if (data.conformances == 2) {
+  }else{
     yes = "modoReparoOff";
     not = "modoReparoOn";
   }
@@ -494,6 +497,7 @@ app.get("/infor/pdf", (req, res) => {
         alignment: "justify",
         columns: [
           //primeira
+        [
           {
             image: "defeito",
             style: "reparoImg",
@@ -501,48 +505,95 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
           },
           {
+            image: 'advert',
+            width: 25,
+            style: 'advert1'
+          }
+        ],
+        [
+          {
             image: "defeito",
             style: "reparoImg2",
             width: 126,
             height: 90,
           },
           {
+            image: 'advert',
+            width: 25,
+            style: 'advert2'
+          }
+        ],
+        [
+          {
             image: "defeito",
             style: "reparoImg3",
             width: 126,
             height: 90,
           },
-
+          {
+            image: 'advert',
+            width: 25,
+            style: 'advert3'
+          }
+        ],
+        [
           {
             image: "defeito",
             style: "reparoImg4",
             width: 126,
             height: 90,
           },
+          {
+            image: 'advert',
+            width: 25,
+            style: 'advert4'
+          }
+        ]  
         ],
       },
       {
         alignment: "justify",
         columns: [
           //segunda
-          {
+          [
+            {
             image: "defeito",
             style: "reparoImg5",
             width: 126,
             height: 90,
-          },
-          {
+            },
+            {
+              image: 'advert',
+              width: 25,
+              style: 'advert5'
+            }
+          ],
+          [
+            {
             image: "defeito",
             style: "reparoImg6",
             width: 126,
             height: 90,
-          },
-          {
+            },
+            {
+              image: 'advert',
+              width: 25,
+              style: 'advert6'
+            }
+          ],
+          [
+            {
             image: "defeito",
             style: "reparoImg7",
             width: 126,
             height: 90,
-          },
+            },
+            {
+              image: 'advert',
+              width: 25,
+              style: 'advert7'
+            }
+          ]
         ],
       },
       {
@@ -636,6 +687,7 @@ app.get("/infor/pdf", (req, res) => {
       grafico3: './src/graficos/grafico3.png',
       graficoPosCura: "./src/graficos/graficoPosCura.png",
       btnCertificado: "./src/btn-certificado.png",
+      advert: `./src/advert.png`
     },
     styles: {
       aero: {
@@ -762,25 +814,25 @@ app.get("/infor/pdf", (req, res) => {
         margin: [22, 23, 0, 0],
       },
       reparoImg:{
-        margin: [-15, 43, 30, 0],
+        margin: [-15, 43, 33, 0],
       },
       reparoImg2:{
-        margin: [0.5, 43, 30, 0],
+        margin: [-17, 43, 30, 0],
       },
       reparoImg3:{
-        margin: [17, 43, 30, 0],
+        margin: [-19, 43, 30, 0],
       },
       reparoImg4:{
-        margin: [32, 43, 30, 0],
+        margin: [-21, 43, 30, 0],
       },
       reparoImg5:{
-        margin: [-15, 75, 20, 0],
+        margin: [-15, 50, 20, 0],
       },
       reparoImg6:{
-        margin: [0.5, 75, 30, 0],
+        margin: [-45, 50, 30, 0],
       },
       reparoImg7:{
-        margin: [17, 75, 30, 0],
+        margin: [-75, 50, 30, 0],
       },
       grafico3:{
         margin: [-5,0,0,0]
@@ -806,6 +858,28 @@ app.get("/infor/pdf", (req, res) => {
       list: {
         margin: [60, -2, 0, 18],
       },
+      advert1:{
+        margin: [98, 0, 0, 0]
+      },
+      advert2:{
+        margin: [98, 0, 0, 0]
+      },
+      advert3:{
+        margin: [95, 0, 0, 0]
+      },
+      advert4:{
+        margin: [92, 0, 0, 0]
+      },
+      advert5:{
+        margin: [98, 0, 0, -20]
+      },
+      advert6:{
+        margin: [68, 0, 0, -20]
+      },
+      advert7:{
+        margin: [38, 0, 0, -20],
+        
+      }
     },
   };
 
