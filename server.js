@@ -14,10 +14,10 @@ const port = 3002;
 //#endregion
 
 let dados = {
-  aero: "AeroDark-23",
+  aero: "AeroDark-25",
   blade: "BladeBattery",
   date: "25/11/2023",
-  logo: "dnv",
+  logo: "SPIC",
   eexecutora: "ArtWind",
   tecnicos: [
     { nome: "Davison Martin", id: "1" },
@@ -25,16 +25,16 @@ let dados = {
   ],
   metodoAcesso: "interno",
   fotoDefeito: "def1",
-  nivelReparo: 3,
-  tipoReparo: "Internal",
+  nivelReparo: 1,
+  tipoReparo: "External",
   gpsLocation: "unnamed Road, Parnaíba - PI",
   process: [
-    { nome: "Griding", hours: 6, allRight: true },
-    { nome: "Scarfing", hours: 8, allRight: false },
+    { nome: "Griding", hours: 11, allRight: true },
+    { nome: "Scarfing", hours: 8, allRight: true },
     { nome: "Laminade", hours: 4, allRight: true },
     { nome: "Postcure", hours: 6, allRight: true },
     { nome: "HardnessTest", hours: 9, allRight: true },
-    { nome: "Finishing", hours: 3, allRight: false },
+    { nome: "Finishing", hours: 3, allRight: true },
     { nome: "Painting", hours: 4, allRight: true },
   ],
   standByCustumer: "value",
@@ -263,7 +263,7 @@ app.get("/infor/pdf", (req, res) => {
     yes = "modoReparoOff";
     not = "modoReparoOn";
   }
-
+  
   const totalHrs = () => {
     let soma = 0;
     for (let index = 0; index < data.process.length; index++) {
@@ -271,6 +271,39 @@ app.get("/infor/pdf", (req, res) => {
     }
     return soma;
   };
+
+  let imgWarning = {
+    1:'notAdvert',
+    2:'notAdvert',
+    3:'notAdvert',
+    4:'notAdvert',
+    5:'notAdvert',
+    6:'notAdvert',
+    7:'notAdvert'
+  }
+
+  if(dados.process[0].allRight == false){
+    imgWarning[1] = 'advert'
+  }
+  if(dados.process[1].allRight == false){
+    imgWarning[2] = 'advert'
+  }
+  if(dados.process[2].allRight == false){
+    imgWarning[3] = 'advert'
+  }
+  if(dados.process[3].allRight == false){
+    imgWarning[4] = 'advert'
+  }
+  if(dados.process[4].allRight == false){
+    imgWarning[5] = 'advert'
+  }
+  if(dados.process[5].allRight == false){
+    imgWarning[6] = 'advert'
+  }
+  if(dados.process[6].allRight == false){
+    imgWarning[7] = 'advert'
+  }
+
 
   const docDefinition = {
     background: function (page) {
@@ -505,7 +538,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
           },
           {
-            image: 'advert',
+            image: imgWarning[1],
             width: 25,
             style: 'advert1'
           }
@@ -518,7 +551,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
           },
           {
-            image: 'advert',
+            image: imgWarning[2],
             width: 25,
             style: 'advert2'
           }
@@ -531,7 +564,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
           },
           {
-            image: 'advert',
+            image: imgWarning[3],
             width: 25,
             style: 'advert3'
           }
@@ -544,7 +577,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
           },
           {
-            image: 'advert',
+            image: imgWarning[4],
             width: 25,
             style: 'advert4'
           }
@@ -563,7 +596,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
             },
             {
-              image: 'advert',
+              image: imgWarning[5],
               width: 25,
               style: 'advert5'
             }
@@ -576,7 +609,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
             },
             {
-              image: 'advert',
+              image: imgWarning[6],
               width: 25,
               style: 'advert6'
             }
@@ -589,7 +622,7 @@ app.get("/infor/pdf", (req, res) => {
             height: 90,
             },
             {
-              image: 'advert',
+              image: imgWarning[7],
               width: 25,
               style: 'advert7'
             }
@@ -687,7 +720,8 @@ app.get("/infor/pdf", (req, res) => {
       grafico3: './src/graficos/grafico3.png',
       graficoPosCura: "./src/graficos/graficoPosCura.png",
       btnCertificado: "./src/btn-certificado.png",
-      advert: `./src/advert.png`
+      advert: "./src/advert.png",
+      notAdvert: "./src/notAdvert.png"
     },
     styles: {
       aero: {
@@ -878,7 +912,7 @@ app.get("/infor/pdf", (req, res) => {
       },
       advert7:{
         margin: [38, 0, 0, -20],
-        
+
       }
     },
   };
